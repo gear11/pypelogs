@@ -1,24 +1,34 @@
 import logging
 import g11pyutils as utils
-LOG = logging.getLogger("head")
+LOG = logging.getLogger("each")
 
 
-class Head(object):
-    """Implements the equivalent of Unix 'head' command"""
-    def __init__(self, spec = None):
-        self.count = 0
-        opts = utils.to_dict(spec)
-        self.n = int(opts["n"]) if opts and opts.has_key("n") else 10
+class Each(object):
+    """Yields multiple events for each input event by replicating the
+    event per instance of the input event field, which must be a list"""
+    def __init__(self, spec):
+        if spec.find('=') > 0:
+            self.key, self.new_key = spec.split('=', 1)
+        else:
+            self.key = spec
+            self.new_key = self.key
 
     def done(self):
         if self.n > 0 and self.n <= self.count:
             return True
 
     def filter(self, events):
-        self.count = 0
         for e in events:
-            self.count += 1
-            yield e
-            if self.done():
-                raise StopIteration
+            prop = e.get(self.key)
+            if prop:
+                if isinstance(prop, (list, tuple)):
+                    for p in prop:
+                        new_e = e.copy()
+                        del new_e[self.key]
+                        new_e[self.new_key] = p
+                        yield new_e
+                elif self.key != self.new_key:
+                    e[self.new_key] = prop
+                    del e[self.key]
+                    yield e
 
