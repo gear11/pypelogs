@@ -1,0 +1,3 @@
+[submodule "g11pyutils"]
+	path = g11pyutils
+	url = https://github.com/gear11/G11PyUtils.git
