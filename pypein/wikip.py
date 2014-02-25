@@ -48,6 +48,12 @@ class WikipGeo(WikipArticles):
 def wikip_url(s):
     return 'http://wikipedia.org/wiki/'+s.replace(' ', '_')
 
+def skip_article(title):
+    """Skips articles that have no value"""
+    if title.find("Wikipedia:WikiProject National Register of Historic Places/") == 0:
+        return True
+    return False
+
 def geo_filter(d):
     """Inspects the given Wikipedia article dict for geo-coordinates.
 
@@ -55,14 +61,18 @@ def geo_filter(d):
     with the title and URL of the original article, along with coordinates."""
     page = d["page"]
     if not page.has_key("revision"):
-        return
+        return None
     title = page["title"]
+
+    if skip_article(title):
+        LOG.info("Skipping low-value article %s", title)
+        return None
     text = page["revision"]["text"]
     if not utils.is_str_type(text):
         if text.has_key("#text"):
             text = text["#text"]
         else:
-            return
+            return None
     LOG.debug("--------------------------------------------------------------")
     LOG.debug(title)
     LOG.debug("--------------------------------------------------------------")
@@ -80,29 +90,74 @@ def bare(tag):
 | latitude = 48.8738
 | longitude = 2.2950
 '''
-INFO_BOX_LAT_LON = re.compile(r"\|\s*latitude\s*=\s*(-?[\d\.]+)\s*\|\s*longitude\s*=\s*(-?[\d\.]+)", re.MULTILINE | re.UNICODE )
+INFO_BOX_LAT_LON = re.compile(r"(\|\s*latitude\s*=\s*(-?[\d\.]+)\s*\|\s*longitude\s*=\s*(-?[\d\.]+))", re.MULTILINE )
 '''
 {{coord|35.0797|-80.7742|region:US-NC_type:edu|display=title}}
 {{coord|77|51|S|166|40|E|}}
 '''
-COORDS_LAT_LON_DEG_MIN = re.compile(r"\{\{coord\|(\d+)\|(\d+)\|([NS])\|(\d+)\|(\d+)\|([EW])\|", re.MULTILINE | re.UNICODE )
-COORDS_LAT_LON_DEC = re.compile(r"\{\{coord\|(-?\d+\.\d+)\|(-?\d+\.\d+)\|", re.MULTILINE | re.UNICODE )
+COORDS_GEN = re.compile(r"(\{\{coord\|[^\}]+\}\})")
+#COORDS_GROUPS = re.compile(r"\{\{coord\|(?:display[^\|]+\|)?((?:\s*-?[\d\.]+\s*\|?){1,3})([NS]\|)?((?:\s*-?[\d\.]+\s*\|){0,3})([EW])?")
+COORDS_GROUPS = re.compile(r"\{\{coord\|(?:[^\d\|]+\|)*((?:\s*-?[\d\.]+\s*\|?){1,3})([NS]\|)?((?:\s*-?[\d\.]+\s*\|){0,3})([EW])?")
 
 def find_geo_coords(s):
     """Returns a list of lat/lons found by scanning the given text"""
     coords = []
     LOG.debug("Matching in text size %s", len(s))
-    for m in re.findall(COORDS_LAT_LON_DEG_MIN, s):
-        LOG.debug("Matched: %s", m)
-        lat = (float(m[0]) + float(m[1])/60.0) * (1 if m[2].upper() == 'N' else -1)
-        lon = (float(m[3]) + float(m[4])/60.0) * (1 if m[5].upper()  == 'E' else -1)
-        coords.append((lat, lon))
-    coords.extend([(float(m[0]), float(m[1])) for m in re.findall(INFO_BOX_LAT_LON, s)])
-    coords.extend([(float(m[0]), float(m[1])) for m in re.findall(COORDS_LAT_LON_DEC, s)])
+    for c in INFO_BOX_LAT_LON.findall(s):
+        try:
+            coord = (float(c[1]), float(c[2]), c[0])
+            coords.append(coord)
+            LOG.debug("Found info box lat/lon: %s", coord)
+        except Exception as ex:
+            LOG.warn("Bad parse of info box %s: %s", c, ex)
+    for c in COORDS_GEN.findall(s):
+        # Special cases
+        if skip_coords(c):
+            LOG.debug("Ignorning coords %s", c)
+            continue
+        m = COORDS_GROUPS.search(c)
+        if not m:
+            LOG.warn("Unrecognized coord format: %s", c)
+            continue
+        try:
+            # Remove empty optional groups and remove pipes from matches
+            g = [(s[0:-1] if s[-1] == '|' else s) for s in list(m.groups()) if s is not None and len(s)]
+            #LOG.info("Found groups: %s", g)
+            if len(g) == 1: # Single lat|lon
+                lat, lon = g[0].split('|')
+                coord = (float(lat), float(lon), c)
+                coords.append(coord)
+                coords.append((float(lat), float(lon), c))
+                LOG.debug("Found lat|lon: %s", coord)
+            elif g[3] == 'E' or g[3] == 'W':
+                lat = depipe(g[0]) * (1 if g[1].upper() == 'N' else -1)
+                lon = depipe(g[2]) * (1 if g[3].upper()  == 'E' else -1)
+                coord = (lat, lon, c)
+                coords.append(coord)
+                LOG.debug("Found lat|NS|lon|EW: %s", coord)
+            else:
+                LOG.warn("Unrecognized coord format: %s (parsed %s)", c, g)
+        except Exception as ex:
+            LOG.warn("Bad parse of %s: %s", c, ex)
     l = []
     for c in set(coords): # Dedupe; the reality is non-trivial though...
-        if (c[0] > 90 or c[0] < -90 or c[1] > 180 or c[1] < -180):
-            LOG.warn("Invalid coords: %s", c)
+        if (c[0] > 90 or c[0] < -90 or c[1] > 180 or c[1] < -180 or (c[0] == 0 and c[1] == 0)):
+            LOG.warn("Invalid lat or lon: %s", c)
         else:
             l.append({ "type": "Point", "coordinates": (c[1], c[0]) }) # GeoJSON, lon goes first
     return l
+
+def depipe(s):
+    """Convert a string of the form DD or DD|MM or DD|MM|SS to decimal degrees"""
+    n = 0
+    for i in reversed(s.split('|')):
+        n = n / 60.0 + float(i)
+    return n
+
+def skip_coords(c):
+    """Skip coordinate strings that are not valid"""
+    if c == "{{coord|LAT|LONG|display=inline,title}}": # Unpopulated coord template
+        return True
+    if c.find("globe:") >= 0 and c.find("globe:earth") == -1: # Moon, venus, etc.
+        return True
+    return False

@@ -1,11 +1,13 @@
 from wikip import WikipArticles, WikipGeo
 from text import Text
 from json_in import JSON
+from mongodb import MongoDBGeo
 CLASSES = {
     'text' : Text,
     'json' : JSON,
     'wikip' : WikipArticles,
-    'wikig' : WikipGeo
+    'wikig' : WikipGeo,
+    'mongeo' : MongoDBGeo
 }
 
 def input_for(s):

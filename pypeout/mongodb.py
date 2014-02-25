@@ -9,7 +9,7 @@ class MongoDB(object):
     def __init__(self, spec, host='127.0.0.1', port=27017, buffer=1000):
         LOG.warn(pymongo.get_version_string())
         args = spec.split(",", 1)
-        self.db, self.coll = args[0].split(".")
+        self.db_name, self.coll = args[0].split(".")
         opts = utils.to_dict(args[1]) if len(args) > 1 else {}
         self.host = opts.get("host", host)
         self.port = opts.get("port", port)
@@ -24,20 +24,19 @@ class MongoDB(object):
 
     def do_connect(self):
         mongo_client = pymongo.MongoClient(self.host, self.port)
-        if not self.db in mongo_client.database_names():
-            raise ValueError("No database named '%s'", self.db)
-        db = mongo_client[self.db]
-        if not self.coll in db.collection_names():
-            raise ValueError("Database '%s' has no collection named '%s'" % (self.db, self.coll))
+        self.collection(mongo_client) # verify
         return mongo_client
 
-    def collection(self):
-        mongo_client = self.conn.c()
+    def db(self, cli=None):
+        mongo_client = cli if cli else self.conn.c()
         if not mongo_client:
             raise Exception("Not connected")
-        if not self.db in mongo_client.database_names():
-            raise ValueError("No database named '%s'", self.db)
-        db = mongo_client[self.db]
+        if not self.db_name in mongo_client.database_names():
+            raise ValueError("No database named '%s'", self.db_name)
+        return mongo_client[self.db_name]
+
+    def collection(self, cli=None):
+        db = self.db(cli)
         if not self.coll in db.collection_names():
             raise ValueError("Database '%s' has no collection named '%s'" % (self.db, self.coll))
         return db[self.coll]
