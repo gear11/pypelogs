@@ -1,8 +1,12 @@
 import json
-import sys
+import g11pyutils as utils
+
 class JSONOut(object):
+    def __init__(self, spec=None):
+        self.fo = utils.fout(spec)
+
     def process(self, pin):
         for e in pin:
-            sys.stdout.write(json.dumps(e))
-            sys.stdout.write("\n")
-            sys.stdout.flush()
+            self.fo.write(json.dumps(e))
+            self.fo.write("\n")
+            self.fo.flush()

@@ -1,9 +1,21 @@
-from head import Head
+from bucket import Bucket
 from each import Each
+from groupby import GroupBy
+from head import Head
+from keep import Keep
+from set import Set
+from sort import Sort
+from split import Split
 
 CLASSES = {
+    'bucket' : Bucket,
     'each' : Each,
-    'head' : Head
+    'groupby' : GroupBy,
+    'head' : Head,
+    'keep' : Keep,
+    'set' : Set,
+    'sort' : Sort,
+    'split' : Split
 }
 
 def filter_for(s):

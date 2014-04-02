@@ -1,6 +1,6 @@
 import g11pyutils as utils
 class Text(object):
-    def __init__(self, f):
+    def __init__(self, f=None):
         self.fo = utils.fopen(f)
 
     def __iter__(self):
