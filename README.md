@@ -16,11 +16,11 @@ output is blocked for any reason, then the tool simply stops reading in more dat
 
 ## Installation
 
-Pypelogs can be installed via Pip.
+Pypelogs can be installed via Pip. (coming soon...)
 
 ## Usage
 
-Pypelogs installs itself as `pl`.  The syntax is as follows:
+Pypelogs installs itself as `pl` (coming soon...).  The syntax is as follows:
 
     $ pl input [filter1 filter2 ... filterN] [output]
 

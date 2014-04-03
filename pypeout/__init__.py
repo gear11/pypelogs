@@ -1,8 +1,12 @@
 from json_out import JSONOut
 from mongodb import MongoDB
+from csv_out import CSVOut
+from text_out import TextOut
 CLASSES = {
-    'json' : JSONOut,
-    'mongodb' : MongoDB
+    'csv': CSVOut,
+    'json': JSONOut,
+    'mongodb': MongoDB,
+    'text': TextOut
 }
 
 def output_for(s):

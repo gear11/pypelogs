@@ -15,4 +15,5 @@ class Sort(filter.Filter):
         s = l
         for k in reversed(self.sort_keys):
             s = sorted(s, key=operator.itemgetter(k))
-        yield s
+        for e in s:
+            yield e

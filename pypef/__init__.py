@@ -3,6 +3,7 @@ from each import Each
 from groupby import GroupBy
 from head import Head
 from keep import Keep
+from log import Log
 from set import Set
 from sort import Sort
 from split import Split
@@ -13,9 +14,11 @@ CLASSES = {
     'groupby' : GroupBy,
     'head' : Head,
     'keep' : Keep,
+    'log' : Log,
     'set' : Set,
     'sort' : Sort,
     'split' : Split
+
 }
 
 def filter_for(s):
