@@ -1,3 +1,5 @@
 .idea/
 data/
 *.pyc
+dist/
+pypelogs.egg-info/

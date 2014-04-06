@@ -1,7 +1,7 @@
 #pypelogs
 
-A generator-based tool and framework for piping log data (and other discrete event sources) from inputs to outputs,
-with any number of filters in between.
+A generator-based tool for piping log data (and other sources) from inputs to outputs,
+with any number of filters in between. Website: [https://github.com/gear11/pypelogs](https://github.com/gear11/pypelogs)
 
 Pypelogs is modeled after the Unix shell: it's fed from an input file or STDIN, sends input through any number
 of filters, then outputs to STDOUT or a specified sink. Internally, pypelogs is treating each input line
@@ -16,11 +16,13 @@ output is blocked for any reason, then the tool simply stops reading in more dat
 
 ## Installation
 
-Pypelogs can be installed via Pip. (coming soon...)
+Pypelogs can be installed via Pip:
+
+    $ pip install pypelogs
 
 ## Usage
 
-Pypelogs installs itself as `pl` (coming soon...).  The syntax is as follows:
+Pypelogs installs itself as `pl` (and as `pypelogs`).  The syntax is as follows:
 
     $ pl input [filter1 filter2 ... filterN] [output]
 
