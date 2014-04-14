@@ -1,5 +1,6 @@
 from bucket import Bucket
 from each import Each
+from eval import Eval
 from groupby import GroupBy
 from head import Head
 from keep import Keep
@@ -11,6 +12,7 @@ from split import Split
 CLASSES = {
     'bucket' : Bucket,
     'each' : Each,
+    'eval' : Eval,
     'groupby' : GroupBy,
     'head' : Head,
     'keep' : Keep,

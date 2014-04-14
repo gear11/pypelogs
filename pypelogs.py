@@ -20,7 +20,7 @@ def main():
 
     LOG.info("Parsing %s specs", len(args.specs))
     # First spec is always an input
-    pin = pypein.input_for(args.specs[0])
+    pin = pypein.input_for(args.specs[0]).__iter__()
     # If only an input spec was provided, then use json for output
     if len(args.specs) == 1:
         pout = pypeout.output_for("json")

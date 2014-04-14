@@ -2,7 +2,9 @@ from wikip import WikipArticles, WikipGeo
 from text import Text
 from json_in import JSON
 from mongodb import MongoDBGeo
+from csv_in import CSVIn
 CLASSES = {
+    'csv' : CSVIn,
     'text' : Text,
     'json' : JSON,
     'wikip' : WikipArticles,

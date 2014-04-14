@@ -4,10 +4,10 @@ LOG = logging.getLogger("bucket")
 
 
 class Bucket(object):
-    """Converts individual events to lists of events.  If events are already coming in as buckets,
-    then re-buckets them.  User with negative arguments to distribute into N buckets (requires
+    """Converts individual events to lists of events of a specified length. If events are already coming in as buckets,
+    then re-buckets them.  Use with negative arguments to distribute into N buckets (requires
     getting whole list into memory).  Use 0 to unbucket"""
-    def __init__(self, size = 0):
+    def __init__(self, size=0):
         self.size = int(size)
 
     def filter(self, events):
