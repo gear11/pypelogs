@@ -1,11 +1,13 @@
 from json_out import JSONOut
 from mongodb import MongoDB
 from csv_out import CSVOut
+from sql_out import SQLOut
 from text_out import TextOut
 CLASSES = {
     'csv': CSVOut,
     'json': JSONOut,
     'mongodb': MongoDB,
+    'sql': SQLOut,
     'text': TextOut
 }
 

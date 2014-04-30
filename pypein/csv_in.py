@@ -1,8 +1,8 @@
 import g11pyutils as utils
 import logging
+import csv
 LOG = logging.getLogger("csv_in")
 
-DELIM = ','
 class CSVIn(object):
     def __init__(self, spec=None):
         args = spec.split(",", 1)
@@ -13,26 +13,15 @@ class CSVIn(object):
         self.headers = None
         self.fo = utils.fopen(args[0], self.opts.get('enc', 'utf-8'))
 
-    @staticmethod
-    def unquote(s):
-        if len(s) < 2:
-            return s
-        c = s[0]
-        if c == '"' or c == "'" and c == s[-1]:
-            return s[1:-1]
-        else:
-            return s
-
     def __iter__(self):
         count = 0
-        for line in self.fo:
+        for vals in csv.reader(self.fo):
             count += 1
             if not self.headers:
-                self.headers = [CSVIn.unquote(s) for s in line.strip().split(DELIM)]
+                self.headers = vals
                 continue
             try:
                 e = {}
-                vals = [CSVIn.unquote(s) for s in line.strip().split(DELIM)]
                 i = 0
                 for h in self.headers:
                     e[h] = vals[i]

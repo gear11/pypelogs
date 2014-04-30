@@ -3,10 +3,12 @@ from text import Text
 from json_in import JSON
 from mongodb import MongoDBGeo
 from csv_in import CSVIn
+from oracle import Oracle
 CLASSES = {
     'csv' : CSVIn,
     'text' : Text,
     'json' : JSON,
+    'ora' : Oracle,
     'wikip' : WikipArticles,
     'wikig' : WikipGeo,
     'mongeo' : MongoDBGeo
