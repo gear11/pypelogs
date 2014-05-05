@@ -78,7 +78,7 @@ def geo_filter(d):
     LOG.debug("--------------------------------------------------------------")
     LOG.debug(text)
     c = find_geo_coords(text)
-    return { "source" : "wikipedia", "title" : title, "url" : wikip_url(title), "coords" : c } if c else None
+    return { "title" : title, "url" : wikip_url(title), "coords" : c } if c else None
 
 
 def bare(tag):
