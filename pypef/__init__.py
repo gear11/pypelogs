@@ -8,6 +8,7 @@ from log import Log
 from set import Set
 from sort import Sort
 from split import Split
+from tail import Tail
 
 CLASSES = {
     'bucket' : Bucket,
@@ -19,7 +20,8 @@ CLASSES = {
     'log' : Log,
     'set' : Set,
     'sort' : Sort,
-    'split' : Split
+    'split' : Split,
+    'tail' : Tail,
 
 }
 
