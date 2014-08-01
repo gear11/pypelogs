@@ -1,16 +1,29 @@
 import logging
-import g11pyutils as utils
+import re
 LOG = logging.getLogger("bucket")
 
 
 class Bucket(object):
     """Converts individual events to lists of events of a specified length. If events are already coming in as buckets,
     then re-buckets them.  Use with negative arguments to distribute into N buckets (requires
-    getting whole list into memory).  Use 0 to unbucket"""
-    def __init__(self, size=0):
-        self.size = int(size)
+    getting whole list into memory).  Use 0 to unbucket.  Use with a field name to create a new bucket
+    whenever that property changes"""
+
+    INT_FMT = re.compile(r'\d+')
+    def __init__(self, spec=0):
+        if Bucket.INT_FMT.match(spec):
+            self.size = int(spec)
+            self.prop = None
+            self.filter_func = self.filter_by_size
+        else:
+            self.size = 0
+            self.prop = spec
+            self.filter_func = self.filter_by_prop
 
     def filter(self, events):
+        return self.filter_func(events)
+
+    def filter_by_size(self, events):
         bucket = []
         for e in events:
             if isinstance(e, dict):  # Single event, append
@@ -41,8 +54,16 @@ class Bucket(object):
                 yield bucket[n:n+sz] if n+sz < len(bucket) else bucket[n:]
                 n += sz
 
-
-
+    def filter_by_prop(self, events):
+        b = []
+        for e in events:
+            if not b or b[0].get(self.prop) == e.get(self.prop):
+                b.append(e)
+            else:
+                yield b
+                b = []
+        if b:
+            yield b
 
 
 

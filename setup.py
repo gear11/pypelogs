@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pypelogs',
-    version='0.0.1',
+    version='0.0.2',
     py_modules = ['pypelogs'],
     packages=find_packages(),
     license='GPL3',

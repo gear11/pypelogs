@@ -1,10 +1,29 @@
 import g11pyutils as utils
 import xml.etree.ElementTree as ET
+from xml.etree.ElementTree import XMLParser
 import logging
 import re
+import base64
+import hashlib
+import codecs
 
 LOG = logging.getLogger("wikip")
 
+class WikipXMLParser(XMLParser):
+    def init(self, html=0, target=None, encoding=None):
+        super(WikipXMLParser, self).__init__(html, target, encoding)
+
+    def feed(self, data):
+        #LOG.warn("Feeding %s %s" % (type(%s), data))
+        # Yes this is awful, I've got to encode it...
+        #data = codecs.
+        r = super(WikipXMLParser, self).feed(data)
+        LOG.warn("Returned %s" % r)
+        return r
+
+    def Parse(self, data, num):
+        LOG.warn("Hello!!!!")
+        super(WikipXMLParser, self).Parse(data, num)
 
 class WikipArticles(object):
     """Iterates over a Wikipedia XML article dump, producing one event per article.
@@ -12,13 +31,13 @@ class WikipArticles(object):
     The event is a deeply-nested dict matching the article XML and capturing the full article contents.
     """
     def __init__(self, article_file=None, filter = None):
-        self.fo = utils.fopen(article_file)
+        self.fo = utils.fopen(article_file, 'b') # 'utf-8')
         self.filter = filter
         LOG.info("Using ElementTree version %s", ET.VERSION)
 
     def __iter__(self):
         # get an iterable
-        context = ET.iterparse(self.fo, events=("start", "end"))
+        context = ET.iterparse(self.fo, events=("start", "end"))#, parser=XMLParser(encoding="UTF-8"))
         ET.register_namespace('', 'http://www.mediawiki.org/xml/export-0.8/')
         # turn it into an iterator
         context = iter(context)
@@ -39,7 +58,7 @@ class WikipArticles(object):
                         LOG.warn("Exception filtering article: %s", e)
                 else:
                     yield d
-            root.clear() # clear each time to prevent memory growth
+            root.clear()  # clear each time to prevent memory growth
 
 class WikipGeo(WikipArticles):
     def __init__(self, article_file=None):
@@ -63,7 +82,6 @@ def geo_filter(d):
     if not page.has_key("revision"):
         return None
     title = page["title"]
-
     if skip_article(title):
         LOG.info("Skipping low-value article %s", title)
         return None
@@ -78,7 +96,19 @@ def geo_filter(d):
     LOG.debug("--------------------------------------------------------------")
     LOG.debug(text)
     c = find_geo_coords(text)
-    return { "title" : title, "url" : wikip_url(title), "coords" : c } if c else None
+    u = wikip_url(title)
+    """
+    m = hashlib.md5()
+    m.update(u.encode("UTF-8") if hasattr(u, 'encode') else u)
+    i = base64.urlsafe_b64encode(m.digest()).replace('=', '')
+    """
+    return {
+        #"id": i,
+        "title": title,
+        "url": u,
+        "coords": c,
+        "updated": page["revision"].get("timestamp")
+    } if c else None
 
 
 def bare(tag):
@@ -105,7 +135,7 @@ def find_geo_coords(s):
     LOG.debug("Matching in text size %s", len(s))
     for c in INFO_BOX_LAT_LON.findall(s):
         try:
-            coord = (float(c[1]), float(c[2]), c[0])
+            coord = (float(c[1]), float(c[2]))  #, c[0])
             coords.append(coord)
             LOG.debug("Found info box lat/lon: %s", coord)
         except Exception as ex:
@@ -125,14 +155,13 @@ def find_geo_coords(s):
             #LOG.info("Found groups: %s", g)
             if len(g) == 1: # Single lat|lon
                 lat, lon = g[0].split('|')
-                coord = (float(lat), float(lon), c)
+                coord = (float(lat), float(lon))  #, c)
                 coords.append(coord)
-                coords.append((float(lat), float(lon), c))
                 LOG.debug("Found lat|lon: %s", coord)
             elif g[3] == 'E' or g[3] == 'W':
                 lat = depipe(g[0]) * (1 if g[1].upper() == 'N' else -1)
-                lon = depipe(g[2]) * (1 if g[3].upper()  == 'E' else -1)
-                coord = (lat, lon, c)
+                lon = depipe(g[2]) * (1 if g[3].upper() == 'E' else -1)
+                coord = (lat, lon)  #, c)
                 coords.append(coord)
                 LOG.debug("Found lat|NS|lon|EW: %s", coord)
             else:
@@ -140,11 +169,11 @@ def find_geo_coords(s):
         except Exception as ex:
             LOG.warn("Bad parse of %s: %s", c, ex)
     l = []
-    for c in set(coords): # Dedupe; the reality is non-trivial though...
-        if (c[0] > 90 or c[0] < -90 or c[1] > 180 or c[1] < -180 or (c[0] == 0 and c[1] == 0)):
+    for c in set(coords):  # Dedupe; the reality is non-trivial though...we want to keep only the most precise
+        if c[0] > 90 or c[0] < -90 or c[1] > 180 or c[1] < -180 or (c[0] == 0 and c[1] == 0):
             LOG.warn("Invalid lat or lon: %s", c)
         else:
-            l.append({ "type": "Point", "coordinates": (c[1], c[0]) }) # GeoJSON, lon goes first
+            l.append({"type": "Point", "coordinates": (c[1], c[0])})  # GeoJSON, lon goes first
     return l
 
 def depipe(s):

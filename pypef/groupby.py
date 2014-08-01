@@ -31,8 +31,9 @@ class GroupBy(object):
         bucket = []
         for k, v in groups.iteritems():
             e = {}
-            for k in self.group_keys:
-                e[k] = v[0][k]  # Use first event to populate keys
+            for gk in self.group_keys:
+                if gk != '*':
+                    e[gk] = v[0][gk]  # Use first event to populate keys
             e['count'] = len(v)
             bucket.append(e)
         return bucket
