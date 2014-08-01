@@ -1,13 +1,18 @@
-import cx_Oracle
-
 import g11pyutils as utils
-import json
 import logging
 
 LOG = logging.getLogger("Oracle")
 
+CX_ORACLE_ERROR = None
+try:
+    import cx_Oracle
+except ImportError, ex:
+    CX_ORACLE_ERROR = ex
+
 class Oracle(object):
     def __init__(self, spec):
+        if CX_ORACLE_ERROR:
+            raise CX_ORACLE_ERROR
         self.conn_str, self.query = spec.split(",")
         def do_connect():
             return self.do_connect()
