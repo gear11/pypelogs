@@ -1,6 +1,7 @@
 from bucket import Bucket
 from each import Each
 from eval import Eval
+from exec_filter import Exec
 from groupby import GroupBy
 from head import Head
 from keep import Keep
@@ -14,6 +15,7 @@ CLASSES = {
     'bucket' : Bucket,
     'each' : Each,
     'eval' : Eval,
+    'exec' : Exec,
     'groupby' : GroupBy,
     'head' : Head,
     'keep' : Keep,
@@ -24,6 +26,11 @@ CLASSES = {
     'tail' : Tail,
 
 }
+
+
+def register(s, clz):
+    CLASSES[s] = clz
+
 
 def filter_for(s):
     spec_args = s.split(':', 1)
