@@ -2,12 +2,14 @@ from wikip import WikipArticles, WikipGeo
 from text import Text
 from json_in import JSON
 from mongodb import MongoDBGeo
+from nginx import Nginx
 from csv_in import CSVIn
 from oracle import Oracle
 CLASSES = {
     'csv' : CSVIn,
     'text' : Text,
     'json' : JSON,
+    'nginx' : Nginx,
     'ora' : Oracle,
     'wikip' : WikipArticles,
     'wikig' : WikipGeo,
