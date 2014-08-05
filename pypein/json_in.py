@@ -4,7 +4,7 @@ import logging
 LOG = logging.getLogger("json_in")
 
 class JSON(object):
-    def __init__(self, f):
+    def __init__(self, f='-'):
         self.fo = utils.fopen(f)
 
     def __iter__(self):
