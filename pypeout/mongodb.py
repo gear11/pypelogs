@@ -7,7 +7,7 @@ LOG = logging.getLogger("MongoDB")
 
 
 class MongoDB(object):
-    def __init__(self, spec, host='127.0.0.1', port=27017, buff=1000, id_field=None, updated_field=None):
+    def __init__(self, spec, host='127.0.0.1', port=27017, buff=1000, id_field=None, updated_field='_updated', upsert=False):
         """
         Constructs a MongoDB output
         :param spec: A string for embedding options, e.g. 'host=example.com,port=80,id=_id,ts=created:updated
@@ -25,7 +25,8 @@ class MongoDB(object):
         self.port = opts.get("port", port)
         self.buffer = opts.get("b", buff)
         self.id_field = opts.get("id", id_field)
-        self.updated_field = opts.get("u", updated_field)
+        self.updated_field = opts.get("updated", updated_field)
+        self.upsert = ('%s' % opts.get("upsert", upsert)).lower() == "true"
 
         def do_connect():
             return self.do_connect()
@@ -59,7 +60,6 @@ class MongoDB(object):
         conn.close()
 
     def send(self, docs):
-        LOG.info("Inserting %s docs", len(docs))
         c = self.collection()
         while True:
             try:
@@ -68,7 +68,26 @@ class MongoDB(object):
                 #bulk.execute()
                 #if self.id_field:
                 #    c.update({"_id" : })
-                c.insert(docs, manipulate=False, continue_on_error=True)
+                if self.upsert:
+                    inserts = []
+                    upserts = []
+                    for d in docs:
+                        if '_id' in d:
+                            upserts.append(d)
+                        else:
+                            inserts.append(d)
+                    if inserts:
+                        LOG.info("Inserting %s new docs" % len(docs))
+                        c.insert(inserts)
+                    if upserts:
+                        LOG.info("Upserting %s docs" % len(docs))
+                        bulk = c.initialize_ordered_bulk_op()
+                        for u in upserts:
+                            bulk.find({'_id': u.pop('_id')}).upsert().update({'$set': u})
+                        bulk.execute()
+                else:
+                    LOG.info("Inserting %s docs" % len(docs))
+                    c.insert(docs, manipulate=False, continue_on_error=True)
                 break
             except pymongo.errors.DuplicateKeyError as dke:
                 LOG.warn(dke)
@@ -93,7 +112,8 @@ class MongoDB(object):
             if self.updated_field and self.updated_field in e:
                 try:
                     e['_updated'] = parse_iso8601(e[self.updated_field])
-                    e.pop(self.updated_field)  # Only if 1st step completes
+                    if self.updated_field != '_updated':
+                        e.pop(self.updated_field)  # Only if 1st step completes
                 except Exception, ex:
                     LOG.warn("Exception parsing updated date: %s, %s" % (ex, ex.message))
             LOG.debug("Inserting %s", e)
