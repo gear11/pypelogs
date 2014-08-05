@@ -13,9 +13,6 @@ class Each(object):
             self.key = spec
             self.new_key = self.key
 
-    def done(self):
-        if self.n > 0 and self.n <= self.count:
-            return True
 
     def filter(self, events):
         for e in events:
