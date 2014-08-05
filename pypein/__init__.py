@@ -5,16 +5,19 @@ from mongodb import MongoDBGeo
 from nginx import Nginx
 from csv_in import CSVIn
 from oracle import Oracle
+from postgresql import Postgresql
 CLASSES = {
     'csv' : CSVIn,
     'text' : Text,
     'json' : JSON,
     'nginx' : Nginx,
     'ora' : Oracle,
+    'pgsql' : Postgresql,
     'wikip' : WikipArticles,
     'wikig' : WikipGeo,
     'mongeo' : MongoDBGeo
 }
+
 
 def input_for(s):
     spec_args = s.split(':', 1)
