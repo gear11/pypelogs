@@ -4,10 +4,12 @@ from json_in import JSON
 from mongodb import MongoDBGeo
 from nginx import Nginx
 from csv_in import CSVIn
+from flickr import Flickr
 from oracle import Oracle
 from postgresql import Postgresql
 CLASSES = {
     'csv' : CSVIn,
+    'flickr' : Flickr,
     'text' : Text,
     'json' : JSON,
     'nginx' : Nginx,
