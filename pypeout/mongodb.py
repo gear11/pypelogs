@@ -111,7 +111,8 @@ class MongoDB(object):
                 e['_id'] = e.pop(self.id_field)
             if self.updated_field and self.updated_field in e:
                 try:
-                    e['_updated'] = parse_iso8601(e[self.updated_field])
+                    uf = e[self.updated_field]
+                    e['_updated'] = uf if isinstance(uf, datetime) else parse_iso8601(uf)
                     if self.updated_field != '_updated':
                         e.pop(self.updated_field)  # Only if 1st step completes
                 except Exception, ex:
