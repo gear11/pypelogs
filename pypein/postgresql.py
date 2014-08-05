@@ -41,6 +41,7 @@ class Postgresql(object):
 
     def __iter__(self):
         cursor = self.conn.conn.cursor()
+        yielded = 0
         try:
             cursor.execute(self.query)
             keys = [d[0] for d in cursor.description]
@@ -48,6 +49,7 @@ class Postgresql(object):
                 e = {}
                 for i in range(0, len(keys)):
                     e[keys[i]] = r[i]
+                yielded += 1
                 yield e
         except Exception, err:
             #error, = exc.args
@@ -55,3 +57,4 @@ class Postgresql(object):
             LOG.error("Error-Message: %s", err.message)
         finally:
             self.conn.close()
+        LOG.info("Postrgresql query yielded %s rows" % yielded)

@@ -28,30 +28,48 @@ def main():
         LOG.info("Running config file %s" % args.config)
         execfile(args.config)
 
-    LOG.info("Parsing %s specs", len(args.specs))
-    # First spec is always an input
-    pin = pypein.input_for(args.specs[0]).__iter__()
-    # If only an input spec was provided, then use json for output
-    if len(args.specs) == 1:
-        pout = pypeout.output_for("json")
-    else:
-        # Middle specs are filters that successively wrap input
-        for s in args.specs[1:-1]:
-            pin = pypef.filter_for(s).filter(pin)
-        # Assume output on last spec, but it may be a filter.
-        # If last spec is a filter, use json for output
-        try:
-            pout = pypeout.output_for(args.specs[-1])
-        except ValueError, ex:
-            pin = pypef.filter_for(args.specs[-1]).filter(pin)
-            pout = pypeout.output_for("json")
+    process(args.specs)
 
+
+def process(specs):
+    """
+    Executes the passed in list of specs
+    """
+    pout, pin = chain_specs(specs)
     LOG.info("Processing")
     sw = StopWatch().start()
     r = pout.process(pin)
     if r:
         print r
     LOG.info("Finished in %s", sw.read())
+
+
+def chain_specs(specs):
+    """
+    Parses the incoming list of specs and produces a tuple (pout, pin) that can be invoked with:
+        <pre>
+        result = pout.process(pin)
+        </pre>
+    """
+    LOG.info("Parsing %s specs", len(specs))
+    # First spec is always an input
+    pin = pypein.input_for(specs[0]).__iter__()
+    # If only an input spec was provided, then use json for output
+    if len(specs) == 1:
+        pout = pypeout.output_for("json")
+    else:
+        # Middle specs are filters that successively wrap input
+        for s in specs[1:-1]:
+            pin = pypef.filter_for(s).filter(pin)
+        # Assume output on last spec, but it may be a filter.
+        # If last spec is a filter, use json for output
+        try:
+            pout = pypeout.output_for(specs[-1])
+        except ValueError, ex:
+            pin = pypef.filter_for(specs[-1]).filter(pin)
+            pout = pypeout.output_for("json")
+    return pout, pin
+
 
 if __name__ == '__main__':
     main()
