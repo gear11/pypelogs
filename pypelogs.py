@@ -5,10 +5,6 @@ import pypein
 import pypef
 import pypeout
 from g11pyutils import StopWatch
-# Execfile doesn't seem to do anything with imports,
-# So add some common ones here
-import hashlib
-import base64
 
 LOG = logging.getLogger("pypelogs")
 
@@ -26,7 +22,7 @@ def main():
 
     if args.config:
         LOG.info("Running config file %s" % args.config)
-        execfile(args.config)
+        execfile(args.config, globals())
 
     process(args.specs)
 
