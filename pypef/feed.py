@@ -85,8 +85,10 @@ def bare(tag):
 
 
 TRAILING_TZ = re.compile(r'.*([+\-])(\d{2}):?(\d{2})')
+
+
 def normalize_timestamp(s):
-    LOG.info("Parsing '%s'" % (s))
+    LOG.info("Parsing '%s'" % s)
     if not s:
         return None
     # Convert trailing TZ to timedelta
@@ -106,4 +108,4 @@ def normalize_timestamp(s):
     except ValueError:
         dt = datetime.strptime(s, "%a, %d %b %Y %H:%M:%S")  # RFC822: Fri, 11 Jul 2014 12:21:04 +000
     dt += delta
-    return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+    return dt  # dt.strftime('%Y-%m-%dT%H:%M:%SZ')

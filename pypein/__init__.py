@@ -7,17 +7,20 @@ from csv_in import CSVIn
 from flickr import Flickr
 from oracle import Oracle
 from postgresql import Postgresql
+from twitter import Twitter
+
 CLASSES = {
-    'csv' : CSVIn,
-    'flickr' : Flickr,
-    'text' : Text,
-    'json' : JSON,
-    'nginx' : Nginx,
-    'ora' : Oracle,
-    'pgsql' : Postgresql,
-    'wikip' : WikipArticles,
-    'wikig' : WikipGeo,
-    'mongeo' : MongoDBGeo
+    'csv':    CSVIn,
+    'flickr': Flickr,
+    'text':   Text,
+    'json':   JSON,
+    'nginx':  Nginx,
+    'ora':    Oracle,
+    'pgsql':  Postgresql,
+    'twitter': Twitter,
+    'wikip':  WikipArticles,
+    'wikig':  WikipGeo,
+    'mongeo': MongoDBGeo
 }
 
 

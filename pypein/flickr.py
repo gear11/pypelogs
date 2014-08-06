@@ -1,15 +1,18 @@
-import g11pyutils as utils
 import logging
 import json
+import datetime
 
 LOG = logging.getLogger("Flickr")
 
 
 class Flickr(object):
     """
-    Input from the Flickr API
+    Input from the Flickr API.
     """
     def __init__(self, spec):
+        # Defer import until we need it
+        import flickrapi
+
         args = spec.split(',')
         creds_fname = args[0]
         if len(args) > 1:
@@ -17,16 +20,15 @@ class Flickr(object):
         else:
             self.cmds = ['interesting']
         # Parse creds file
-        with utils.fopen(creds_fname) as fo:
-            creds = dict((k, v) for k, v in [l.strip().split('=', 1) for l in fo])
+        with open(creds_fname, "r") as fo:
+            creds = eval(fo.read())
         LOG.info("Using creds: %s" % creds)
-        # Defer import until we need it
-        import flickrapi
+
         self.flickr = flickrapi.FlickrAPI(creds['api_key'], creds['api_secret'], format='json')
 
     def __iter__(self):
         for cmd in self.cmds:
-            n = cmd.find('=')  # Arguments, as in interesting=owner_name,date_upload
+            n = cmd.find('=')  # (command)=(extras), as in interesting=owner_name,date_upload
             if n > 0:
                 args = cmd[n+1:].split(',')
                 cmd = cmd[0:n]
@@ -48,13 +50,14 @@ class Flickr(object):
         while True:
             LOG.info("Fetching page %s" % page)
             rsp = self.load_rsp(self.flickr.interestingness_getList(extras=extras, page=page))
-            #LOG.info("Flickr response: (%s) %s" % (type(rsp), rsp))
             if rsp["stat"] == "ok":
                 photos = rsp["photos"]
                 if int(photos["page"]) < page:
                     LOG.info("End of Flickr pages (%s pages with %s per page)" % (photos["pages"], photos["perpage"]))
                     break
                 for p in photos["photo"]:
+                    if 'lastupdate' in p:
+                        p['lastupdate'] = datetime.datetime.fromtimestamp(int(p['lastupdate']))
                     yield p
                 page += 1
             else:
@@ -63,6 +66,9 @@ class Flickr(object):
 
     @staticmethod
     def load_rsp(rsp):
+        """
+        Converts raw Flickr string response to Python dict
+        """
         first = rsp.find('(') + 1
         last = rsp.rfind(')')
         return json.loads(rsp[first:last])
