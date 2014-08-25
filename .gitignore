@@ -3,3 +3,4 @@ data/
 *.pyc
 dist/
 pypelogs.egg-info/
+build/
