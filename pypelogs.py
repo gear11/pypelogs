@@ -61,7 +61,7 @@ def chain_specs(specs):
         # If last spec is a filter, use json for output
         try:
             pout = pypeout.output_for(specs[-1])
-        except ValueError, ex:
+        except pypeout.NoSuchOutputException, ex:
             pin = pypef.filter_for(specs[-1]).filter(pin)
             pout = pypeout.output_for("json")
     return pout, pin
