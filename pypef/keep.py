@@ -10,10 +10,6 @@ class Keep(Filter):
         self.keeps = spec.split(',')
 
     def filter_events(self, events):
-
         for e in events:
-            #LOG.warn("Keeping %s", e)
-            for k in e.keys():
-                if not k in self.keeps:
-                    e.pop(k)
-            yield e
+            keep = {k: e[k] for k in e.keys() if k in self.keeps}
+            yield keep
