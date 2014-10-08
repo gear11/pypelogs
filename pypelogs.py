@@ -23,7 +23,7 @@ def main():
     if args.config:
         LOG.info("Running config file %s" % args.config)
         #execfile(args.config, globals())
-        exec(compile(open(args.config, "rb").read(), args.config, 'exec'), globals(), locals)
+        exec(compile(open(args.config, "rb").read(), args.config, 'exec'), globals())
 
     process(args.specs)
 
@@ -67,6 +67,17 @@ def chain_specs(specs):
             pout = pypeout.output_for("json")
     return pout, pin
 
+
+def register_input(s, clz):
+    pypein.register(s, clz)
+
+
+def register_filter(s, clz):
+    pypef.register(s, clz)
+
+
+def register_output(s, clz):
+    pypeout.register(s, clz)
 
 if __name__ == '__main__':
     main()

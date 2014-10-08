@@ -1,31 +1,35 @@
-
-
-from .wikip import WikipArticles, WikipGeo
-from .text import Text
+from .csv_in import CSVIn
+from .flickr import Flickr
+from .http import HTTP, HTTPS
+from .instagram_in import Instagram
 from .json_in import JSON
 from .mongodb import MongoDBGeo
 from .nginx import Nginx
-from .csv_in import CSVIn
-from .flickr import Flickr
-from .instagram_in import Instagram
 from .oracle import Oracle
 from .postgresql import Postgresql
+from .text import Text
 from .twitter import Twitter
+from .wikip import WikipArticles, WikipGeo
 
 CLASSES = {
     'csv':    CSVIn,
     'flickr': Flickr,
+    'http':   HTTP,
+    'https':  HTTPS,
     'ig':     Instagram,
-    'text':   Text,
     'json':   JSON,
+    'mongeo': MongoDBGeo,
     'nginx':  Nginx,
     'ora':    Oracle,
     'pgsql':  Postgresql,
+    'text':   Text,
     'twitter': Twitter,
     'wikip':  WikipArticles,
     'wikig':  WikipGeo,
-    'mongeo': MongoDBGeo
 }
+
+def register(s, clz):
+    CLASSES[s] = clz
 
 
 def input_for(s):

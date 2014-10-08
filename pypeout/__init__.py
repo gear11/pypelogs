@@ -22,6 +22,9 @@ def output_for(s):
         raise NoSuchOutputException(spec_args[0])
     return clz() if len(spec_args) == 1 else clz(spec_args[1])
 
+def register(s, clz):
+    CLASSES[s] = clz
+
 
 class NoSuchOutputException(Exception):
     def __init__(self, value):
