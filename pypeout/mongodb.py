@@ -1,5 +1,4 @@
 import g11pyutils as utils
-import pymongo
 import logging
 from datetime import datetime
 
@@ -17,6 +16,7 @@ class MongoDB(object):
         :param id_field: The event field that should be used as the ID
         :param ts_fields: The event field(s), colon delimited, that should be parsed as ISO8601 timestamps
         """
+        import pymongo
         LOG.warn(pymongo.get_version_string())
         args = spec.split(",", 1)
         self.db_name, self.coll = args[0].split(".")
@@ -27,6 +27,8 @@ class MongoDB(object):
         self.id_field = opts.get("id", id_field)
         self.updated_field = opts.get("updated", updated_field)
         self.upsert = ('%s' % opts.get("upsert", upsert)).lower() == "true"
+        self.pymongo_client = pymongo.MongoClient
+        self.pymongo_errors = pymongo.errors
 
         def do_connect():
             return self.do_connect()
@@ -38,7 +40,7 @@ class MongoDB(object):
         self.conn.connect()
 
     def do_connect(self):
-        mongo_client = pymongo.MongoClient(self.host, self.port)
+        mongo_client = self.pymongo_client(self.host, self.port)
         self.collection(mongo_client) # verify
         return mongo_client
 
@@ -89,7 +91,7 @@ class MongoDB(object):
                     LOG.info("Inserting %s docs" % len(docs))
                     c.insert(docs, manipulate=False, continue_on_error=True)
                 break
-            except pymongo.errors.DuplicateKeyError as dke:
+            except self.pymongo_errors.DuplicateKeyError as dke:
                 LOG.warn(dke)
                 break
             except Exception as ex:
@@ -115,7 +117,7 @@ class MongoDB(object):
                     e['_updated'] = uf if isinstance(uf, datetime) else parse_iso8601(uf)
                     if self.updated_field != '_updated':
                         e.pop(self.updated_field)  # Only if 1st step completes
-                except Exception, ex:
+                except Exception as ex:
                     LOG.warn("Exception parsing updated date: %s, %s" % (ex, ex.message))
             LOG.debug("Inserting %s", e)
             buff.append(e)

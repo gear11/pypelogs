@@ -41,7 +41,7 @@ class Flickr(object):
                     yielded += 1
                     yield e
                 LOG.info("Method '%s' yielded %s rows" % (cmd, yielded))
-            except Exception, err:
+            except Exception as err:
                 LOG.error("Error-Message: %s", err.message)
 
     def interesting(self, args=None):

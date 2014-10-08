@@ -44,12 +44,12 @@ class Wget(object):
             url = e[self.key]
             fname = url.rsplit('/', 1)[-1]
             outpath = os.path.join(self.dir, fname)
-            LOG.warn("Fetching %s to %s" % (url, outpath))
+            LOG.info("Fetching %s to %s" % (url, outpath))
             try:
                 r = requests.get(url, stream=True)
                 if r.status_code == 200:
                     with open(outpath, 'wb') as fo:
                         for chunk in r.iter_content(1024):
                             fo.write(chunk)
-            except Exception, ex:
+            except Exception as ex:
                 LOG.warn("Failed to fetch %s: %s" % (url, ex))

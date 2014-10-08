@@ -1,17 +1,17 @@
-from bucket import Bucket
-from each import Each
-from eval import Eval
-from exec_filter import Exec
-from feed import Feed
-from groupby import GroupBy
-from head import Head
-from keep import Keep
-from log import Log
-from set import Set
-from sort import Sort
-from split import Split
-from tail import Tail
-from trim import Trim
+from .bucket import Bucket
+from .each import Each
+from .eval import Eval
+from .exec_filter import Exec
+from .feed import Feed
+from .groupby import GroupBy
+from .head import Head
+from .keep import Keep
+from .log import Log
+from .set import Set
+from .sort import Sort
+from .split import Split
+from .tail import Tail
+from .trim import Trim
 
 CLASSES = {
     'bucket' : Bucket,

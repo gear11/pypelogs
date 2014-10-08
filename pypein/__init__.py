@@ -1,14 +1,16 @@
-from wikip import WikipArticles, WikipGeo
-from text import Text
-from json_in import JSON
-from mongodb import MongoDBGeo
-from nginx import Nginx
-from csv_in import CSVIn
-from flickr import Flickr
-from instagram_in import Instagram
-from oracle import Oracle
-from postgresql import Postgresql
-from twitter import Twitter
+
+
+from .wikip import WikipArticles, WikipGeo
+from .text import Text
+from .json_in import JSON
+from .mongodb import MongoDBGeo
+from .nginx import Nginx
+from .csv_in import CSVIn
+from .flickr import Flickr
+from .instagram_in import Instagram
+from .oracle import Oracle
+from .postgresql import Postgresql
+from .twitter import Twitter
 
 CLASSES = {
     'csv':    CSVIn,

@@ -8,7 +8,7 @@ class Head(object):
     def __init__(self, spec = None):
         self.count = 0
         opts = utils.to_dict(spec)
-        self.n = int(opts["n"]) if opts and opts.has_key("n") else 10
+        self.n = int(opts["n"]) if opts and "n" in opts else 10
 
     def done(self):
         if self.n > 0 and self.n <= self.count:

@@ -42,7 +42,7 @@ class WikipArticles(object):
         # turn it into an iterator
         context = iter(context)
         # get the root element
-        event, root = context.next()
+        event, root = next(context)
         LOG.info("Root attrib: %s", root.attrib)
         for event, el in context:
             tag = bare(el.tag)
@@ -54,7 +54,7 @@ class WikipArticles(object):
                         d = self.filter(d)
                         if d:
                             yield d
-                    except Exception, e:
+                    except Exception as e:
                         LOG.warn("Exception filtering article: %s", e)
                 else:
                     yield d
@@ -79,7 +79,7 @@ def geo_filter(d):
     If no coordinates are found, returns None.  Otherwise, returns a new dict
     with the title and URL of the original article, along with coordinates."""
     page = d["page"]
-    if not page.has_key("revision"):
+    if not "revision" in page:
         return None
     title = page["title"]
     if skip_article(title):
@@ -87,7 +87,7 @@ def geo_filter(d):
         return None
     text = page["revision"]["text"]
     if not utils.is_str_type(text):
-        if text.has_key("#text"):
+        if "#text" in text:
             text = text["#text"]
         else:
             return None

@@ -1,14 +1,14 @@
 import logging
-import filter
+from .filter import Filter
 import re
 LOG = logging.getLogger("set")
 from string import Template
 
 SIMPLE = re.compile(r'^\$\{([^\{]+)\}$')
-class Set(filter.Filter):
+class Set(Filter):
     """Sets specified fields, treating each as a template with the original event subbed in"""
     def __init__(self, spec):
-        super(filter.Filter, self).__init__()
+        super(Filter, self).__init__()
         self.templates = {}
         for s in spec.split(','):
             k, v = s.split('=')
@@ -21,7 +21,7 @@ class Set(filter.Filter):
     def filter_events(self, events):
         for e in events:
             copy = e.copy()
-            for k, t in self.templates.iteritems():
+            for k, t in self.templates.items():
                 if isinstance(t, str):
                     copy[k] = e[t]  # Simple
                 else:

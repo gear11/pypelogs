@@ -1,11 +1,11 @@
 import logging
-import filter
+from .filter import Filter
 LOG = logging.getLogger("exec")
 
-class Exec(filter.Filter):
+class Exec(Filter):
     """Executes arbitrary code on each even, where local 'e' is the event being passed in."""
     def __init__(self, spec):
-        super(filter.Filter, self).__init__()
+        super(Filter, self).__init__()
         self.expr = compile(spec, '<string>', 'exec')
 
     def filter_events(self, events):

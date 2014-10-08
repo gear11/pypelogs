@@ -6,7 +6,7 @@ LOG = logging.getLogger("Oracle")
 CX_ORACLE_ERROR = None
 try:
     import cx_Oracle
-except ImportError, ex:
+except ImportError as ex:
     CX_ORACLE_ERROR = ex
 
 class Oracle(object):
@@ -38,7 +38,7 @@ class Oracle(object):
                 for i in range(0, len(keys)):
                     e[keys[i]] = r[i]
                 yield e
-        except cx_Oracle.DatabaseError, exc:
+        except cx_Oracle.DatabaseError as exc:
             error, = exc.args
             LOG.error("Oracle-Error-Code:", error.code)
             LOG.error("Oracle-Error-Message:", error.message)

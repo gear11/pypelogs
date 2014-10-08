@@ -5,6 +5,6 @@
 #
 # Sample usage: flickr_to_dir.sh ../data/flickr
 #
-python pypelogs.py flickr:/cygdrive/c/git/GPSPressServer/data/flickr.creds \
+python pypelogs.py --info flickr:../GPSPressServer/data/flickr.creds \
     'exec:e["url"]="https://farm%s.staticflickr.com/%s/%s_%s_b.jpg"%(e["farm"],e["server"],e["id"],e["secret"])' \
     keep:url wget:$1

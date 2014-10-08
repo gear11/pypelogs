@@ -1,12 +1,12 @@
 import logging
-import filter
+from .filter import Filter
 LOG = logging.getLogger("trim")
 
 
-class Trim(filter.Filter):
+class Trim(Filter):
     """Trims the indicated, comma-delimited list of fields"""
     def __init__(self, spec):
-        super(filter.Filter, self).__init__()
+        super(Filter, self).__init__()
         self.fields = spec.split(',')
 
     def filter_events(self, events):

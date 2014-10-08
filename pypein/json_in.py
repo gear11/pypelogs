@@ -13,5 +13,5 @@ class JSON(object):
             count += 1
             try:
                 yield json.loads(line)
-            except Exception, ex:
+            except Exception as ex:
                 LOG.warn("Exception parsing input line %s: %s", count, ex)

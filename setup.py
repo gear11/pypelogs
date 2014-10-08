@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 # python setup.py sdist upload
 setup(
     name='pypelogs',
-    version='0.0.3',
+    version='0.3.0',
     py_modules = ['pypelogs'],
     packages=find_packages(),
     license='GPL3',
@@ -14,7 +14,7 @@ setup(
     author='Andy Jenkins',
     author_email='andy@gear11.com',
     url='https://github.com/gear11/pypelogs',
-    install_requires=['pymongo>=2.6.3'],
+    install_requires=[],
     entry_points={
         'console_scripts': [
             'pl = pypelogs:main', 'pypelogs = pypelogs:main',

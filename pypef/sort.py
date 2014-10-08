@@ -1,13 +1,13 @@
 import logging
-import filter
+from .filter import Filter
 import operator
 LOG = logging.getLogger("sorts")
 
 
-class Sort(filter.Filter):
+class Sort(Filter):
     """Sorts on the indicated, comma-delimited list of fields"""
     def __init__(self, spec):
-        super(filter.Filter, self).__init__()
+        super(Filter, self).__init__()
         self.sort_keys = []
         self.desc = set()
         for field in spec.split(','):

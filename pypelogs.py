@@ -22,7 +22,8 @@ def main():
 
     if args.config:
         LOG.info("Running config file %s" % args.config)
-        execfile(args.config, globals())
+        #execfile(args.config, globals())
+        exec(compile(open(args.config, "rb").read(), args.config, 'exec'), globals(), locals)
 
     process(args.specs)
 
@@ -36,7 +37,7 @@ def process(specs):
     sw = StopWatch().start()
     r = pout.process(pin)
     if r:
-        print r
+        print(r)
     LOG.info("Finished in %s", sw.read())
 
 
@@ -61,7 +62,7 @@ def chain_specs(specs):
         # If last spec is a filter, use json for output
         try:
             pout = pypeout.output_for(specs[-1])
-        except pypeout.NoSuchOutputException, ex:
+        except pypeout.NoSuchOutputException as ex:
             pin = pypef.filter_for(specs[-1]).filter(pin)
             pout = pypeout.output_for("json")
     return pout, pin

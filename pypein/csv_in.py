@@ -39,5 +39,5 @@ class CSVIn(object):
                     e[h] = vals[i]
                     i += 1
                 yield e
-            except Exception, ex:
+            except Exception as ex:
                 LOG.warn("Exception parsing input line %s: %s", count, ex)

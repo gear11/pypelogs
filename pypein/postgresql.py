@@ -51,7 +51,7 @@ class Postgresql(object):
                     e[keys[i]] = r[i]
                 yielded += 1
                 yield e
-        except Exception, err:
+        except Exception as err:
             #error, = exc.args
             #LOG.error("Postgresql-Error-Code:", err.code)
             LOG.error("Error-Message: %s", err.message)
