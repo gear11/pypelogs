@@ -11,5 +11,5 @@ class Keep(Filter):
 
     def filter_events(self, events):
         for e in events:
-            keep = {k: e[k] for k in e.keys() if k in self.keeps}
+            keep = {k: e[k] for k in self.keeps if k in e}
             yield keep
