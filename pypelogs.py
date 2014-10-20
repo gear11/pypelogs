@@ -14,16 +14,15 @@ def main():
     parser.add_argument('specs', metavar='S', nargs='+', help='A pype specification')
     parser.add_argument("-d", "--debug", help="Log at debug level", action='store_true')
     parser.add_argument("-i", "--info", help="Log at info level", action='store_true')
-    parser.add_argument("-c", "--config", help="A config file to execute")
+    parser.add_argument("-x", "--execute", help="A config file to execute before running.")
     args = parser.parse_args()
 
     level = logging.DEBUG if args.debug else logging.INFO if args.info else logging.WARNING
     logging.basicConfig(format='%(asctime)-15s %(levelname)s:%(name)s:%(message)s', level=level, stream=sys.stderr)
 
-    if args.config:
-        LOG.info("Running config file %s" % args.config)
-        #execfile(args.config, globals())
-        exec(compile(open(args.config, "rb").read(), args.config, 'exec'), globals())
+    if args.execute:
+        LOG.info("Running config file %s" % args.execute)
+        exec(compile(open(args.execute, "rb").read(), args.execute, 'exec'), globals())
 
     process(args.specs)
 
