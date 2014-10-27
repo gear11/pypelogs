@@ -11,7 +11,7 @@ LOG = logging.getLogger("pypelogs")
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('specs', metavar='S', nargs='+', help='A pype specification')
+    parser.add_argument('specs', metavar='S', nargs='*', help='A pype specification')
     parser.add_argument("-d", "--debug", help="Log at debug level", action='store_true')
     parser.add_argument("-i", "--info", help="Log at info level", action='store_true')
     parser.add_argument("-x", "--execute", help="A config file to execute before running.")
@@ -24,7 +24,10 @@ def main():
         LOG.info("Running config file %s" % args.execute)
         exec(compile(open(args.execute, "rb").read(), args.execute, 'exec'), globals())
 
-    process(args.specs)
+    if args.specs:
+        process(args.specs)
+    elif not args.execute:
+        LOG.warn("No specs provided and no file executed")
 
 
 def process(specs):
@@ -61,7 +64,7 @@ def chain_specs(specs):
         # If last spec is a filter, use json for output
         try:
             pout = pypeout.output_for(specs[-1])
-        except pypeout.NoSuchOutputException as ex:
+        except pypeout.NoSuchOutputException:
             pin = pypef.filter_for(specs[-1]).filter(pin)
             pout = pypeout.output_for("json")
     return pout, pin

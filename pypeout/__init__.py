@@ -3,7 +3,7 @@ from .mongodb import MongoDB
 from .csv_out import CSVOut
 from .sql_out import SQLOut
 from .text_out import TextOut
-from .wget import Wget
+from .http import HTTP
 
 CLASSES = {
     'csv': CSVOut,
@@ -11,7 +11,7 @@ CLASSES = {
     'mongodb': MongoDB,
     'sql': SQLOut,
     'text': TextOut,
-    'wget': Wget
+    'http': HTTP
 }
 
 
@@ -21,6 +21,7 @@ def output_for(s):
     if not clz:
         raise NoSuchOutputException(spec_args[0])
     return clz() if len(spec_args) == 1 else clz(spec_args[1])
+
 
 def register(s, clz):
     CLASSES[s] = clz
