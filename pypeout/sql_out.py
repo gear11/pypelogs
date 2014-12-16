@@ -1,5 +1,6 @@
 import g11pyutils as utils
 
+
 class SQLOut(object):
     def __init__(self, spec=""):
         args = spec.split(",", 1)

@@ -3,7 +3,8 @@ from .flickr import Flickr
 from .http import HTTP, HTTPS
 from .instagram_in import Instagram
 from .json_in import JSON
-from .mongodb import MongoDBGeo
+from .mongodb import MongoDBGeo, MongoDBIn
+from .mysql_in import MySQLIn
 from .nginx import Nginx
 from .oracle import Oracle
 from .postgresql import Postgresql
@@ -19,6 +20,7 @@ CLASSES = {
     'ig':     Instagram,
     'json':   JSON,
     'mongeo': MongoDBGeo,
+    'mysql':  MySQLIn,
     'nginx':  Nginx,
     'ora':    Oracle,
     'pgsql':  Postgresql,

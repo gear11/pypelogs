@@ -1,5 +1,6 @@
 from .json_out import JSONOut
-from .mongodb import MongoDB
+from .mongodb import MongoDBOut
+from .mysql_out import MySQLOut
 from .csv_out import CSVOut
 from .sql_out import SQLOut
 from .text_out import TextOut
@@ -8,7 +9,8 @@ from .http import HTTP
 CLASSES = {
     'csv': CSVOut,
     'json': JSONOut,
-    'mongodb': MongoDB,
+    'mongodb': MongoDBOut,
+    'mysql' : MySQLOut,
     'sql': SQLOut,
     'text': TextOut,
     'http': HTTP
