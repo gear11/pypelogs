@@ -18,7 +18,11 @@ output is blocked for any reason, then the tool simply stops reading in more dat
 
 Pypelogs can be installed via Pip:
 
+    $ sudo yum install python-virtualenv python27
+    $ virtualenv -p python2.7 ~/py
+    $ source ~/py/bin/activate  # Add this line to your .bashrc
     $ pip install pypelogs
+    $ echo hello world | pl text
 
 ## Usage
 
