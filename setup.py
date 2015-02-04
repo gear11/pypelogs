@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 # python setup.py sdist upload
 setup(
     name='pypelogs',
-    version='0.3.9',
+    version='0.3.13',
     py_modules = ['pypelogs'],
     packages=find_packages(),
     license='GPL3',

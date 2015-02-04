@@ -3,6 +3,7 @@ from .each import Each
 from .eval import Eval
 from .exec_filter import Exec
 from .feed import Feed
+from .filter import Filter  # Make available for subclassing
 from .groupby import GroupBy
 from .head import Head
 from .keep import Keep

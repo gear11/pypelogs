@@ -3,7 +3,7 @@ import g11pyutils as utils
 
 class JSONOut(object):
     def __init__(self, spec=None):
-        json.JSONEncoder.default = utils.default_json_encoder  # A simple object-to-json encoder
+        json.JSONEncoder.default = utils.json_dt_encoder(json.JSONEncoder.default)  # Override DT output
         self.fo = utils.fout(spec)
 
     def process(self, pin):
